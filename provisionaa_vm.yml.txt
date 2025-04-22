@@ -1,0 +1,25 @@
+---
+- name: Provisionar máquina virtual no VMware Workstation
+  hosts: localhost
+  connection: local
+  vars:
+    vm_name: "minha-nova-vm"
+    template_path: "/caminho/para/seu/template.vmx"
+    guest_os: "ubuntu-64"
+    vm_path: "/caminho/onde/salvar/a/vm"
+    memory: 2048
+    cpus: 2
+    network_adapters:
+      - type: bridged
+
+  tasks:
+    - name: Clonar VM a partir do template
+      community.vmware.guest:
+        vm_name: "{{ vm_name }}"
+        template: "{{ template_path }}"
+        state: present
+        guest_os: "{{ guest_os }}"
+        path: "{{ vm_path }}/{{ vm_name }}.vmx"
+        memory: "{{ memory }}"
+        num_cpus: "{{ cpus }}"
+        network: "{{ network_adapters }}"
