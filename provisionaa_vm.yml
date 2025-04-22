@@ -1,16 +1,16 @@
 ---
 - name: Provisionar máquina virtual no VMware Workstation
   hosts: localhost
-  connection: local
+  connection: vmnet8
   vars:
-    vm_name: "minha-nova-vm"
-    template_path: "/caminho/para/seu/template.vmx"
+    vm_name: "linux-apache"
+    template_path: "C:\Users\valdeci\Documents\Virtual Machines\Oracle_Linux_Template\Oracle_Linux_Template.vmx"
     guest_os: "ubuntu-64"
-    vm_path: "/caminho/onde/salvar/a/vm"
+    vm_path: "C:\Users\valdeci\Documents\Virtual Machines"
     memory: 2048
     cpus: 2
     network_adapters:
-      - type: bridged
+      - type: nat
 
   tasks:
     - name: Clonar VM a partir do template
