@@ -5,7 +5,7 @@
   vars:
     vm_name: "linux-apache"
     template_path: "C:\Users\valdeci\Documents\Virtual Machines\Oracle_Linux_Template\Oracle_Linux_Template.vmx"
-    guest_os: "ubuntu-64"
+    guest_os: "oracle-64"
     vm_path: "C:\Users\valdeci\Documents\Virtual Machines"
     memory: 2048
     cpus: 2
