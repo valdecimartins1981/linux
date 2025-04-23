@@ -3,10 +3,10 @@
   hosts: localhost
   connection: vmnet8
   vars:
-    vm_name: "linux-apache"
-    template_path: "C:\Users\valdeci\Documents\Virtual Machines\Oracle_Linux_Template\Oracle_Linux_Template.vmx"
+    vm_name: "Oracle_Linux_Template.vmx"
+    template_path: "C:/Users/valdeci/Documents/Virtual Machines/Oracle_Linux_Template/Oracle_Linux_Template.vmx"
     guest_os: "oracle-64"
-    vm_path: "C:\Users\valdeci\Documents\Virtual Machines"
+    vm_path: "C:/Users/valdeci/Documents/Virtual Machines"
     memory: 2048
     cpus: 2
     network_adapters:
