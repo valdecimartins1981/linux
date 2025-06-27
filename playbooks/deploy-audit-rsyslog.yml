@@ -36,6 +36,16 @@
           - audit               # includes auditd + audispd‑plugins
         audit_syslog_plugin_conf: "/etc/audisp/plugins.d/syslog.conf"
       when: ansible_facts['os_family'] == 'RedHat'
+#Correção
+# BEFORE the lineinfile task
+- name: Ensure plugin directory exists
+  file:
+    path: "{{ audit_syslog_plugin_conf | dirname }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+
 
   tasks:
     ###################################################################
