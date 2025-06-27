@@ -1,20 +1,16 @@
 ---
 - name: Configure rsyslog + auditd forwarding **and** set critical audit rules
-  hosts: all
+  hosts: linux_syslog_hosts
   become: true
 
-  vars_prompt:
-    - name: "logstash_host"
-      prompt: "Enter the Logstash host IP or FQDN"
-      private: no
-      default: "172.16.102.241"
-
-    - name: "logstash_port"
-      prompt: "Enter the Logstash TCP port (only numbers, e.g. 1514)"
-      private: no
-      default: 1514
-
+  # ====================== Adjustable Defaults ======================
+  # These can be overridden via:
+  #   * Extra Vars in AWX             (e.g. -e "logstash_host=10.0.0.5 logstash_port=6514")
+  #   * Survey variables (recommended)
   vars:
+    logstash_host: "172.16.102.241"
+    logstash_port: 1514
+
     # ===== File locations (override per‑distro if necessário) =====
     rsyslog_conf_path: "/etc/rsyslog.d/60-logstash.conf"
     audit_syslog_plugin_conf: "/etc/audisp/plugins.d/syslog.conf"
@@ -135,3 +131,4 @@
       command: augenrules --load
       changed_when: true
       notify: Restart auditd
+
