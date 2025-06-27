@@ -1,6 +1,6 @@
 ---
 - name: Configure rsyslog + auditd forwarding **and** set critical audit rules
-  hosts: all
+  hosts: linux_syslog_hosts
   become: true
 
   # ====================== Adjustable Defaults ======================
@@ -11,23 +11,23 @@
     logstash_host: "172.16.102.241"
     logstash_port: 1514
 
-    # ===== File locations (override per‑distro if necessário) =====
+    # ===== File locations (override per-distro if necessário) =====
     rsyslog_conf_path: "/etc/rsyslog.d/60-logstash.conf"
-    audit_syslog_plugin_conf: "/etc/audisp/plugins.d/syslog.conf"
+    audit_syslog_plugin_conf: "/etc/audit/plugins.d/syslog.conf"
     audit_rules_file: "/etc/audit/rules.d/60-critical.rules"
 
   tasks:
     ###################################################################
     # Pacotes necessários
     ###################################################################
-    - name: Ensure rsyslog + audit packages are present
+    - name: Ensure rsyslog + audit packages are present (Ubuntu/Debian)
       package:
         name: "{{ item }}"
         state: present
       loop:
         - rsyslog
-        - audispd-plugins   # audisp-syslog provider
-        - audit             # auditd & augenrules
+        - audispd-plugins
+        - auditd
 
     ###################################################################
     # rsyslog  →  Logstash
@@ -46,10 +46,10 @@
     ###################################################################
     # auditd  →  syslog (audisp-syslog)
     ###################################################################
-    - name: Enable audisp‑syslog plugin so auditd mirrors events to syslog
+    - name: Enable audisp-syslog plugin so auditd mirrors events to syslog
       lineinfile:
         path: "{{ audit_syslog_plugin_conf }}"
-        regexp: '^\s*active\s*=.*'
+        regexp: '^[#\s]*active\s*=.*'
         line: 'active = yes'
         backrefs: yes
         owner: root
@@ -131,4 +131,3 @@
       command: augenrules --load
       changed_when: true
       notify: Restart auditd
-
