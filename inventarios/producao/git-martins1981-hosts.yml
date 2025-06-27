@@ -1,2 +1,3 @@
 server01 ansible_host=192.168.217.134
 server02 ansible_host=192.168.217.135
+server03 ansible_host=192.168.217.136
