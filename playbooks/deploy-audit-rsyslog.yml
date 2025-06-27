@@ -1,10 +1,10 @@
 ---
 - name: Configure rsyslog + auditd forwarding **and** set critical audit rules
-  hosts: all
+  hosts: linux_syslog_hosts
   become: true
 
   ###################################################################
-  # \u2728 CONFIGURABLE DEFAULTS (override via Extra Vars or Survey)
+  # ✨ CONFIGURABLE DEFAULTS (override via Extra Vars or Survey)
   ###################################################################
   vars:
     logstash_host: "172.16.102.241"
@@ -17,7 +17,7 @@
     rsyslog_conf_path: "/etc/rsyslog.d/60-logstash.conf"
 
   ###################################################################
-  # \u2699\uFE0F  DISTRO‑SPECIFIC VARIABLE SETUP
+  # ⚙️  DISTRO‑SPECIFIC VARIABLE SETUP
   ###################################################################
   pre_tasks:
     - name: Set distro‑specific vars (Debian/Ubuntu)
@@ -39,7 +39,7 @@
 
   tasks:
     ###################################################################
-    # \u1F4E6  Install required packages
+    # 📦  Install required packages
     ###################################################################
     - name: Install rsyslog + audit packages
       package:
@@ -47,7 +47,7 @@
         state: present
 
     ###################################################################
-    # \u1F4F6  rsyslog → Logstash (TCP)
+    # 📶  rsyslog → Logstash (TCP)
     ###################################################################
     - name: Configure rsyslog forwarding to Logstash
       copy:
@@ -61,8 +61,16 @@
       notify: Restart rsyslog
 
     ###################################################################
-    # \u1F516  Enable audisp‑syslog plugin (audit → syslog)
+    # 🔖  Enable audisp‑syslog plugin (audit → syslog)
     ###################################################################
+    - name: Ensure plugin directory exists
+      file:
+        path: "{{ audit_syslog_plugin_conf | dirname }}"
+        state: directory
+        owner: root
+        group: root
+        mode: "0755"
+
     - name: Enable audisp‑syslog plugin
       lineinfile:
         path: "{{ audit_syslog_plugin_conf }}"
@@ -86,7 +94,7 @@
       notify: Restart auditd
 
     ###################################################################
-    # \u1F6E1\uFE0F Critical audit rules
+    # 🛡️ Critical audit rules
     ###################################################################
     - name: Deploy critical audit rules
       copy:
@@ -117,7 +125,7 @@
       notify: Reload audit rules
 
     ###################################################################
-    # \u23F3  Ensure services running
+    # ⏳  Ensure services running
     ###################################################################
     - name: Ensure rsyslog & auditd are running and enabled
       service:
@@ -129,7 +137,7 @@
         - auditd
 
   ###################################################################
-  # \u1F528 Handlers
+  # 🔨 Handlers
   ###################################################################
   handlers:
     - name: Restart rsyslog
