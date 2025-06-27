@@ -1,6 +1,6 @@
 ---
 - name: Configure rsyslog + auditd forwarding **and** set critical audit rules
-  hosts: linux_syslog_hosts
+  hosts: all
   become: true
 
   # ====================== Adjustable Defaults ======================
