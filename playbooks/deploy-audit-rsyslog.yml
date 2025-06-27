@@ -3,11 +3,18 @@
   hosts: linux_syslog_hosts
   become: true
 
-  vars:
-    # ===== Central Logstash endpoint =====
-    logstash_host: "172.16.102.241"
-    logstash_port: 1514
+  vars_prompt:
+    - name: "logstash_host"
+      prompt: "Enter the Logstash host IP or FQDN"
+      private: no
+      default: "172.16.102.241"
 
+    - name: "logstash_port"
+      prompt: "Enter the Logstash TCP port (only numbers, e.g. 1514)"
+      private: no
+      default: 1514
+
+  vars:
     # ===== File locations (override per‑distro if necessário) =====
     rsyslog_conf_path: "/etc/rsyslog.d/60-logstash.conf"
     audit_syslog_plugin_conf: "/etc/audisp/plugins.d/syslog.conf"
@@ -44,10 +51,13 @@
     # auditd  →  syslog (audisp-syslog)
     ###################################################################
     - name: Enable audisp‑syslog plugin so auditd mirrors events to syslog
-      ini_file:
+      lineinfile:
         path: "{{ audit_syslog_plugin_conf }}"
-        option: active
-        value: "yes"
+        regexp: '^\s*active\s*=.*'
+        line: 'active = yes'
+        backrefs: yes
+        owner: root
+        group: root
         mode: "0644"
         backup: yes
       notify:
@@ -63,7 +73,7 @@
       notify: Restart auditd
 
     ###################################################################
-    # 💥 CRITICAL AUDIT RULES (shutdown, passwd/shadow/sudoers) 💥
+    # 💥 CRITICAL AUDIT RULES (shutdown, passwd/shadow/sudoers, apt/yum/dnf) 💥
     ###################################################################
     - name: Deploy critical audit rules
       copy:
@@ -85,6 +95,13 @@
           -w /etc/gshadow   -p wa -k identity
           -w /etc/sudoers   -p wa -k privileged-passwd
           -w /etc/sudoers.d -p wa -k privileged-passwd
+
+          # Package management audit (APT, YUM, DNF)
+          -w /usr/bin/apt       -p x -k package-manager
+          -w /usr/bin/apt-get  -p x -k package-manager
+          -w /usr/bin/yum      -p x -k package-manager
+          -w /usr/bin/dnf      -p x -k package-manager
+
       notify:
         - Reload audit rules
 
