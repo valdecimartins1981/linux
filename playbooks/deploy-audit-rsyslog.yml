@@ -71,6 +71,21 @@
         group: root
         mode: "0755"
 
+    - name: Create audisp‑syslog plugin file if missing
+      copy:
+        dest: "{{ audit_syslog_plugin_conf }}"
+        owner: root
+        group: root
+        mode: "0644"
+        content: |
+          active = yes
+          direction = out
+          path = builtin_syslog
+          type = builtin
+          args = LOG_INFO
+          format = string
+      when: not lookup('ansible.builtin.file', audit_syslog_plugin_conf, errors='ignore', default='')
+
     - name: Enable audisp‑syslog plugin
       lineinfile:
         path: "{{ audit_syslog_plugin_conf }}"
