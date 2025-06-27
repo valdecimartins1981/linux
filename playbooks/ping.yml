@@ -1,0 +1,11 @@
+- name: Ping
+  hosts: all
+  #remote_user: root
+  ignore_errors: true
+  become: yes
+  tasks:
+    - name: Pong
+      file:
+        path: /root/Pong
+        state: touch
+        mode: '0644'
