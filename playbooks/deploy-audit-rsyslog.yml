@@ -165,7 +165,7 @@
         name: auditd
         state: restarted
 
-    - name: Reload audit rules (augenrules → auditd)
+    - name: Reload audit rules
       command: augenrules --load
       changed_when: true
       notify: Restart auditd
